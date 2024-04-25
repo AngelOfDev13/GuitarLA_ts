@@ -1,15 +1,14 @@
-import type { CartGuitar, Guitar } from "../types"
+import type { CartGuitar } from "../types"
+import { useMemo } from "react"
+import { CartActions } from "../reducers/cart-reducer"
 
 type HeaderProps = { 
     cart: CartGuitar[]
-    removeToCart: (id : Guitar['id']) => void
-    increaseQuantity: (id : Guitar['id']) => void
-    decreaseQuantity: (id : Guitar['id']) => void
-    clearCart: () => void
-    cartTotal: number
+    dispatch: React.Dispatch<CartActions>
 }
                 
-const Header = ({ cart, removeToCart, increaseQuantity, decreaseQuantity, clearCart, cartTotal } : HeaderProps) => {
+const Header = ({ cart, dispatch } : HeaderProps) => {
+const cartTotal = useMemo (() => cart.reduce((total, item) => total + (item.quantity * item.price), 0), [cart] )
 
     return (
         <header className="py-5 header">
@@ -56,7 +55,7 @@ const Header = ({ cart, removeToCart, increaseQuantity, decreaseQuantity, clearC
                                                     <button
                                                         type="button"
                                                         className="btn btn-dark"
-                                                        onClick={() => decreaseQuantity(items.id)}
+                                                        onClick={() => dispatch({type: 'decrease-to-cart', payload: {id: items.id} })}
                                                     >
                                                         -
                                                     </button>
@@ -64,7 +63,7 @@ const Header = ({ cart, removeToCart, increaseQuantity, decreaseQuantity, clearC
                                                     <button
                                                         type="button"
                                                         className="btn btn-dark"
-                                                        onClick={() => increaseQuantity(items.id)}
+                                                        onClick={() => dispatch({type: 'increase-to-cart', payload: {id: items.id} })}
                                                     >
                                                         +
                                                     </button>
@@ -73,7 +72,7 @@ const Header = ({ cart, removeToCart, increaseQuantity, decreaseQuantity, clearC
                                                     <button
                                                         className="btn btn-danger"
                                                         type="button"
-                                                        onClick={() => removeToCart(items.id)}
+                                                        onClick={() => dispatch({type: 'remove-to-cart', payload: {id: items.id } })}
                                                     >
                                                         X
                                                     </button>
@@ -88,7 +87,7 @@ const Header = ({ cart, removeToCart, increaseQuantity, decreaseQuantity, clearC
                                 <p className="text-end">Total pagar: <span className="fw-bold">${cartTotal}</span></p>
                                 <button 
                                     className="btn btn-dark w-100 mt-3 p-2"
-                                    onClick={() => clearCart()}
+                                    onClick={() => dispatch({type: 'clear-to-cart' })}
                                     >Vaciar Carrito</button>
                                 
                                 </>
